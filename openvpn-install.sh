@@ -232,12 +232,12 @@ else
 	echo "Otherwise, it should be your public IPv4 address."
 
 	# Autodetect IP address and pre-fill for the user
-	IP=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
-	read -rp "IP address: " -e -i $IP IP
+	IP=`curl -s http://whatismyip.akamai.com/`
+	#read -rp "IP address: " -e -i $IP IP
 	echo ""
 	echo "What port do you want for OpenVPN?"
-	read -rp "Port: " -e -i 1194 PORT
-
+	#read -rp "Port: " -e -i 1194 PORT
+	PORT=$8
 	# If $IP is a private IP address, the server must be behind NAT
 	if echo "$IP" | grep -qE '^(10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.|192\.168)'; then
 		echo ""
@@ -247,9 +247,10 @@ else
 	echo ""
 	echo "What protocol do you want for OpenVPN?"
 	echo "Unless UDP is blocked, you should not use TCP (unnecessarily slower)"
-	until [[ "$PROTOCOL" == "UDP" || "$PROTOCOL" == "TCP" ]]; do
-		read -rp "Protocol [UDP/TCP]: " -e -i UDP PROTOCOL
-	done
+	#until [[ "$PROTOCOL" == "UDP" || "$PROTOCOL" == "TCP" ]]; do
+	#	read -rp "Protocol [UDP/TCP]: " -e -i UDP PROTOCOL
+	#done
+	PROTOCOL=$2
 	echo ""
 	echo "What DNS do you want to use with the VPN?"
 	echo "   1) Current system resolvers (from /etc/resolv.conf)"
@@ -261,9 +262,10 @@ else
 	echo "   7) Google (Anycast: worldwide)"
 	echo "   8) Yandex Basic (Russia)"
 	echo "   9) AdGuard DNS (Russia)"
-	until [[ "$DNS" =~ ^[0-9]+$ ]] && [ "$DNS" -ge 1 -a "$DNS" -le 9 ]; do
-		read -rp "DNS [1-9]: " -e -i 1 DNS
-	done
+	#until [[ "$DNS" =~ ^[0-9]+$ ]] && [ "$DNS" -ge 1 -a "$DNS" -le 9 ]; do
+	#	read -rp "DNS [1-9]: " -e -i 1 DNS
+	#done
+	DNS=$3
 	echo ""
 	echo "See https://github.com/Angristan/OpenVPN-install#encryption to learn more about "
 	echo "the encryption in OpenVPN and the choices I made in this script."
@@ -280,9 +282,10 @@ else
 	echo "   5) CAMELLIA-192-CBC"
 	echo "   6) CAMELLIA-256-CBC"
 	echo "   7) SEED-CBC"
-	until [[ "$CIPHER" =~ ^[0-9]+$ ]] && [ "$CIPHER" -ge 1 -a "$CIPHER" -le 7 ]; do
-		read -rp "Cipher [1-7]: " -e -i 1 CIPHER
-	done
+	#until [[ "$CIPHER" =~ ^[0-9]+$ ]] && [ "$CIPHER" -ge 1 -a "$CIPHER" -le 7 ]; do
+	#	read -rp "Cipher [1-7]: " -e -i 1 CIPHER
+	#done
+	CIPHER=$4
 	case $CIPHER in
 		1)
 		CIPHER="cipher AES-128-CBC"
@@ -311,9 +314,10 @@ else
 	echo "   1) 2048 bits (fastest)"
 	echo "   2) 3072 bits (recommended, best compromise)"
 	echo "   3) 4096 bits (most secure)"
-	until [[ "$DH_KEY_SIZE" =~ ^[0-9]+$ ]] && [ "$DH_KEY_SIZE" -ge 1 -a "$DH_KEY_SIZE" -le 3 ]; do
-		read -rp "DH key size [1-3]: " -e -i 2 DH_KEY_SIZE
-	done
+	#until [[ "$DH_KEY_SIZE" =~ ^[0-9]+$ ]] && [ "$DH_KEY_SIZE" -ge 1 -a "$DH_KEY_SIZE" -le 3 ]; do
+	#	read -rp "DH key size [1-3]: " -e -i 2 DH_KEY_SIZE
+	#done
+	DH_KEY_SIZE=$5
 	case $DH_KEY_SIZE in
 		1)
 		DH_KEY_SIZE="2048"
@@ -330,9 +334,10 @@ else
 	echo "   1) 2048 bits (fastest)"
 	echo "   2) 3072 bits (recommended, best compromise)"
 	echo "   3) 4096 bits (most secure)"
-	until [[ "$RSA_KEY_SIZE" =~ ^[0-9]+$ ]] && [ "$RSA_KEY_SIZE" -ge 1 -a "$RSA_KEY_SIZE" -le 3 ]; do
-		read -rp "RSA key size [1-3]: " -e -i 2 RSA_KEY_SIZE
-	done
+	#until [[ "$RSA_KEY_SIZE" =~ ^[0-9]+$ ]] && [ "$RSA_KEY_SIZE" -ge 1 -a "$RSA_KEY_SIZE" -le 3 ]; do
+	#	read -rp "RSA key size [1-3]: " -e -i 2 RSA_KEY_SIZE
+	#done
+	RSA_KEY_SIZE=$6
 	case $RSA_KEY_SIZE in
 		1)
 		RSA_KEY_SIZE="2048"
@@ -346,6 +351,7 @@ else
 	esac
 	echo ""
 	echo "Finally, tell me a name for the client certificate and configuration"
+	CLIENT=$7
 	while [[ $CLIENT = "" ]]; do
 		echo "Please, use one word only, no special characters"
 		read -rp "Client name: " -e -i client CLIENT
@@ -354,7 +360,7 @@ else
 	done
 	echo ""
 	echo "Okay, that was all I needed. We are ready to setup your OpenVPN server now"
-	read -n1 -r -p "Press any key to continue..."
+	#read -n1 -r -p "Press any key to continue..."
 
 	if [[ "$OS" = 'debian' ]]; then
 		apt-get install ca-certificates gnupg -y
