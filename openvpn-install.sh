@@ -352,13 +352,13 @@ else
 	echo ""
 	echo "Finally, tell me a name for the client certificate and configuration"
 	CLIENT=$7
-	while [[ $CLIENT = "" ]]; do
-		echo "Please, use one word only, no special characters"
-		read -rp "Client name: " -e -i client CLIENT
+	#while [[ $CLIENT = "" ]]; do
+	#	echo "Please, use one word only, no special characters"
+	#	read -rp "Client name: " -e -i client CLIENT
 		# Remove special characters
-		CLIENT=$(echo $CLIENT | tr -dc '[:alnum:]\n\r')
-	done
-	echo ""
+	#	CLIENT=$(echo $CLIENT | tr -dc '[:alnum:]\n\r')
+	#done
+	echo "$CLIENT"
 	echo "Okay, that was all I needed. We are ready to setup your OpenVPN server now"
 	#read -n1 -r -p "Press any key to continue..."
 
